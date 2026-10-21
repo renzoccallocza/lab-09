@@ -1,15 +1,21 @@
 package com.example.lab09
 
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import androidx.navigation.NavType
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -22,11 +28,12 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -49,7 +56,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ProgPrincipal9() {
-    val urlBase = "https://json-placeholder.mock.beeceptor.com/"
+    val urlBase = "https://jsonplaceholder.typicode.com/"
     val retrofit = remember {
         Retrofit.Builder()
             .baseUrl(urlBase)
@@ -125,7 +132,8 @@ fun Contenido(
                 "postsVer/{id}",
                 arguments = listOf(navArgument("id") { type = NavType.IntType })
             ) {
-                ScreenPost(navController, servicio, it.arguments!!.getInt("id"))
+                val id = it.arguments?.getInt("id") ?: 0
+                ScreenPost(navController, servicio, id)
             }
         }
     }
@@ -133,5 +141,43 @@ fun Contenido(
 
 @Composable
 fun ScreenInicio() {
-    Text("INICIO")
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text("INICIO", style = MaterialTheme.typography.headlineMedium)
+    }
+}
+
+@Composable
+fun ScreenPosts(navController: NavHostController, servicio: PostApiService) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Lista de Posts", style = MaterialTheme.typography.headlineSmall)
+        Button(
+            onClick = { navController.navigate("postsVer/1") },
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Text("Ver Post #1")
+        }
+    }
+}
+
+@Composable
+fun ScreenPost(navController: NavHostController, servicio: PostApiService, id: Int) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Detalle del Post #$id", style = MaterialTheme.typography.headlineSmall)
+        Button(
+            onClick = { navController.popBackStack() },
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Text("Volver")
+        }
+    }
 }
